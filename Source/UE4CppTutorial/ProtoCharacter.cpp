@@ -30,6 +30,26 @@ AProtoCharacter::AProtoCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 }
 
+void AProtoCharacter::MoveForward(float Axis)
+{
+	FRotator Rotation = Controller->GetControlRotation();
+	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+	AddMovementInput(Direction, Axis);
+}
+
+void AProtoCharacter::MoveRight(float Axis)
+{
+	FRotator Rotation = Controller->GetControlRotation();
+	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(Direction, Axis);
+}
+
 // Called when the game starts or when spawned
 void AProtoCharacter::BeginPlay()
 {
@@ -52,5 +72,11 @@ void AProtoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &AProtoCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AProtoCharacter::MoveRight);
 }
 
